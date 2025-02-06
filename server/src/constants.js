@@ -5,6 +5,18 @@ export const availableUserRoles = {
 };
 export const availableUserRolesEnum = Object.values(availableUserRoles);
 
+export const allowedImgExtensions = {
+  jpg: '.jpg',
+  png: '.png',
+  jpeg: '.jpeg',
+  webp: '.webp',
+  mp4: '.mp4',
+  mp3: '.mp3',
+  pdf: '.pdf',
+  txt: '.txt',
+};
+export const allowedImgExtensionsEnum = Object.values(allowedImgExtensions);
+
 // URI base path
 export const BASEPATH = '/api/v1';
 

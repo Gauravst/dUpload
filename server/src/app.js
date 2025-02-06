@@ -9,6 +9,11 @@ import { errorHandler } from './middlewares/error.middleware.js';
 import { ApiResponse } from './utils/ApiResponse.js';
 import { ApiError } from './utils/ApiError.js';
 
+// routes imports
+import authRouters from './routes/auth.routes.js';
+import uploadRouters from './routes/upload.routes.js';
+import downloadRouters from './routes/download.routes.js';
+
 // constants
 const app = express();
 
@@ -24,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Test route
-app.get(`${BASEPATH}/healthcheck`, (req, res) => {
+app.get(`${BASEPATH}/healthcheck`, (_, res) => {
   try {
     return res.status(200).json(new ApiResponse(200, 'ok'));
   } catch (error) {
@@ -32,6 +37,11 @@ app.get(`${BASEPATH}/healthcheck`, (req, res) => {
     throw new ApiError(500, error.message);
   }
 });
+
+// route
+app.use(`${BASEPATH}/auth`, authRouters);
+app.use(`${BASEPATH}/upload`, uploadRouters);
+app.use(`${BASEPATH}/download`, downloadRouters);
 
 // Error middleware
 app.use(errorHandler);
