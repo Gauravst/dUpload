@@ -5,6 +5,7 @@ import {
   Share2,
   Trash2,
   MoreVertical,
+  File,
 } from "lucide-react";
 
 type Props = {
@@ -20,13 +21,52 @@ export const Main = ({ filesData, folderName }: Props) => {
 
         <div className="grid gap-4">
           {/* File Card */}
+          {filesData?.length > 0 &&
+            filesData?.map((file, index) => {
+              return (
+                <div
+                  key={index}
+                  className="bg-gray-800/50 backdrop-blur-lg p-4 rounded-lg border border-gray-700/50"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <FolderOpen className="w-8 h-8 text-blue-500" />
+                      <div>
+                        <h3 className="font-medium">Project Files</h3>
+                        <p className="text-sm text-gray-400">
+                          12 files • 256 MB
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button className="p-2 hover:bg-gray-700 rounded-lg">
+                        <Download size={18} />
+                      </button>
+                      <button className="p-2 hover:bg-gray-700 rounded-lg">
+                        <Share2 size={18} />
+                      </button>
+                      <button className="p-2 hover:bg-gray-700 rounded-lg">
+                        <Trash2 size={18} />
+                      </button>
+                      <button className="p-2 hover:bg-gray-700 rounded-lg">
+                        <MoreVertical size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
           <div className="bg-gray-800/50 backdrop-blur-lg p-4 rounded-lg border border-gray-700/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <FolderOpen className="w-8 h-8 text-blue-500" />
+                <File className="w-8 h-8 text-blue-500" />
                 <div>
                   <h3 className="font-medium">Project Files</h3>
-                  <p className="text-sm text-gray-400">12 files • 256 MB</p>
+                  <p className="text-sm text-gray-400">
+                    12/02/2024 • 256 MB • Public
+                  </p>
                 </div>
               </div>
 
