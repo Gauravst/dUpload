@@ -3,88 +3,137 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import dotenv from 'dotenv';
 import pool from '../db/connect.js';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
+/**
+ * 🔹 Helper function to generate access & refresh tokens
+ */
+const generateTokens = (userId, strategy) => {
+  const accessToken = jwt.sign(
+    { id: userId, strategy },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+
+  const refreshToken = jwt.sign(
+    { id: userId, strategy },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: '7d' }
+  );
+
+  return { accessToken, refreshToken };
+};
+
+/**
+ * 🔹 Helper function to insert or update user in database
+ * - This prevents duplicate code for Google & GitHub auth
+ */
+const findOrCreateUser = async ({
+  name,
+  email,
+  profilePic,
+  strategy,
+  strategyId,
+}) => {
+  try {
+    const tokens = generateTokens(strategyId, strategy);
+
+    const query = `
+      INSERT INTO users (name, email, profilePic, strategy, strategyId, refreshToken)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      ON CONFLICT (strategy, strategyId) DO UPDATE 
+      SET 
+        name = EXCLUDED.name, 
+        email = EXCLUDED.email, 
+        profilePic = EXCLUDED.profilePic, 
+        refreshToken = EXCLUDED.refreshToken
+      RETURNING *;
+    `;
+
+    const values = [
+      name,
+      email,
+      profilePic,
+      strategy,
+      strategyId,
+      tokens.refreshToken,
+    ];
+
+    const result = await pool.query(query, values);
+    return { user: result.rows[0], tokens };
+  } catch (error) {
+    console.error('Database error:', error);
+    throw error;
+  }
+};
+
+/**
+ * 🔹 Google Authentication Strategy
+ */
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: '/auth/google/callback',
+      callbackURL: '/api/auth/google/callback',
     },
     async (accessToken, refreshToken, profile, done) => {
-      // try catch here and save data in db in here
       try {
-        const strategy = 'google';
-        const strategyId = profile.id;
-        const name = profile.displayName || profile.username;
-        const email = profile.emails?.[0]?.value || null;
-        const profilePic = profile.photos?.[0]?.value || null;
+        const userData = {
+          name: profile.displayName || profile.username,
+          email: profile.emails?.[0]?.value || null,
+          profilePic: profile.photos?.[0]?.value || null,
+          strategy: 'google',
+          strategyId: profile.id,
+        };
 
-        const query = `
-          INSERT INTO users (name, email, profilePic, strategy, strategyId, createdAt, updatedAt)
-          VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-          ON CONFLICT (strategy, strategyId) DO UPDATE 
-          SET 
-            name = EXCLUDED.name, 
-            email = EXCLUDED.email, 
-            profilePic = EXCLUDED.profilePic, 
-            updatedAt = CURRENT_TIMESTAMP
-          RETURNING *;
-        `;
-
-        const values = [name, email, profilePic, strategy, strategyId];
-        const result = await pool.query(query, values);
-
-        console.log('Inserted/Updated Google User:', result.rows[0]);
-        return done(null, result.rows[0]); // Pass user data to Passport
+        // 🔹 Using the helper function
+        const { user, tokens } = await findOrCreateUser(userData);
+        return done(null, { user, tokens });
       } catch (error) {
-        console.error('Error saving Google user:', error);
+        console.error('Google Auth Error:', error);
+        return done(error);
       }
-      return done(null, profile);
     }
   )
 );
 
+/**
+ * 🔹 GitHub Authentication Strategy
+ */
 passport.use(
   new GitHubStrategy(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: '/auth/github/callback',
+      callbackURL: '/api/auth/github/callback',
     },
     async (accessToken, refreshToken, profile, done) => {
-      // try catch here and save data in db in here
       try {
-        const strategy = 'github';
-        const strategyId = profile.id;
-        const name = profile.displayName || profile.username;
-        const email = profile.emails?.[0]?.value || null;
-        const profilePic = profile.photos?.[0]?.value || null;
+        const userData = {
+          name: profile.displayName || profile.username,
+          email: profile.emails?.[0]?.value || null,
+          profilePic: profile.photos?.[0]?.value || null,
+          strategy: 'github',
+          strategyId: profile.id,
+        };
 
-        const query = `INSERT INTO users (name, email, profilePic, strategy, strategyId, createdAt, updatedAt)
-                       VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-                       ON CONFLICT (strategy, strategyId) DO UPDATE 
-                       SET 
-                       name = EXCLUDED.name, 
-                       email = EXCLUDED.email, 
-                       profilePic = EXCLUDED.profilePic, 
-                       updatedAt = CURRENT_TIMESTAMP
-                       RETURNING *;
-`;
-        const values = [name, email, profilePic, strategy, strategyId];
-
-        const result = await pool.query(query, values);
-        console.log('Inserted User:', result.rows[0]);
+        // 🔹 Using the helper function
+        const { user, tokens } = await findOrCreateUser(userData);
+        return done(null, { user, tokens });
       } catch (error) {
-        console.error(error);
+        console.error('GitHub Auth Error:', error);
+        return done(error);
       }
-      return done(null, profile);
     }
   )
 );
 
+/**
+ * 🔹 Serialize & Deserialize User for Sessions
+ */
 passport.serializeUser((user, done) => {
   done(null, user);
 });

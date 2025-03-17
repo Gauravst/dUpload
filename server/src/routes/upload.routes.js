@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import ensureAuth from '../middlewares/auth.middeware.js';
+import { ensureAuth } from '../middlewares/auth.middeware.js';
 import {
   createNewFolder,
   getAllFiles,

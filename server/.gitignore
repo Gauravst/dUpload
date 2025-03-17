@@ -15,6 +15,7 @@ dist-ssr
 *.local
 
 .env
+database.json
 
 # Editor directories and files
 .vscode/*

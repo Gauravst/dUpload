@@ -18,7 +18,7 @@ export const allowedImgExtensions = {
 export const allowedImgExtensionsEnum = Object.values(allowedImgExtensions);
 
 // URI base path
-export const BASEPATH = '/api/v1';
+export const BASEPATH = '/api';
 
 // Local http PORT
 export const PORT = 5000;

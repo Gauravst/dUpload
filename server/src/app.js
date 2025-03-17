@@ -2,6 +2,11 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import passport from 'passport'; // Import Passport.js
+import dotenv from 'dotenv';
+
+dotenv.config(); // Load environment variables
 
 // module imports
 import { BASEPATH } from './constants.js';
@@ -27,6 +32,20 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Add Session Middleware (Must be before Passport)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET, // Ensure you have this in your .env file
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // Set to true in production with HTTPS
+  })
+);
+
+// Initialize Passport.js
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Test route
 app.get(`${BASEPATH}/healthcheck`, (_, res) => {
