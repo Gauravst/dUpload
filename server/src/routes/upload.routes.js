@@ -1,20 +1,10 @@
 import { Router } from 'express';
-import { ensureAuth } from '../middlewares/auth.middeware.js';
-import {
-  createNewFolder,
-  getAllFiles,
-  getAllFolders,
-  getOneFile,
-  getOneFolder,
-} from '../controllers/file.controllers.js';
+import { uploadData } from '../controllers/upload.controllers.js';
+import { verifyAccessToken } from '../middlewares/auth.middeware.js';
+import { upload } from '../middlewares/multer.middleware.js';
 
 const router = Router();
 
-router.route('/folder').get(getAllFolders);
-router.route('/folder').post(ensureAuth, createNewFolder);
-router.route('/folder/:folderId').get(getOneFolder);
-
-router.route('/file').get(getAllFiles);
-router.route('/file/:fileId').get(getOneFile);
+router.route('/').post(verifyAccessToken, upload.array('file', 4), uploadData);
 
 export default router;

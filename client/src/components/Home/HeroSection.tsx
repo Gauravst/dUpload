@@ -1,7 +1,16 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const HeroSection = () => {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+interface Props {
+  onGetStarted: () => void;
+  isLoggedIn: boolean;
+}
+
+const HeroSection = ({ onGetStarted, isLoggedIn }: Props) => {
+  const navigate = useNavigate();
+  const handleDashboardClick = () => {
+    navigate("/dashboard/main");
+  };
+
   return (
     <div className="relative pt-20">
       <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-transparent pointer-events-none" />
@@ -17,10 +26,10 @@ const HeroSection = () => {
           </p>
 
           <button
-            onClick={() => setIsLoginOpen(true)}
+            onClick={isLoggedIn ? handleDashboardClick : onGetStarted}
             className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-3 rounded-lg transition duration-200"
           >
-            Get Started for Free
+            {isLoggedIn ? "Go to Dashboard" : "Get Started for Free"}
           </button>
         </div>
       </div>

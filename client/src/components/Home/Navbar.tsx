@@ -1,10 +1,16 @@
 import { Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
   onGetStarted: () => void;
+  isLoggedIn: boolean;
 }
 
-export function Navbar({ onGetStarted }: NavbarProps) {
+export function Navbar({ onGetStarted, isLoggedIn }: NavbarProps) {
+  const navigate = useNavigate();
+  const handleDashboardClick = () => {
+    navigate("/dashboard/main");
+  };
   return (
     <nav className="fixed top-0 w-full bg-gray-900/50 backdrop-blur-lg border-b border-gray-800/50 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,10 +21,10 @@ export function Navbar({ onGetStarted }: NavbarProps) {
           </div>
 
           <button
-            onClick={onGetStarted}
+            onClick={isLoggedIn ? handleDashboardClick : onGetStarted}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200"
           >
-            Get Started
+            {isLoggedIn ? "Dashboard" : "Get Started"}
           </button>
         </div>
       </div>

@@ -1,4 +1,6 @@
-import { X, Github, Mail } from "lucide-react";
+import { X } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -6,7 +8,16 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
   if (!isOpen) return null;
+
+  const handleGithubClick = () => {
+    window.open(`${baseUrl}/auth/github`, "_self");
+  };
+
+  const handleGoogleClick = () => {
+    window.open(`${baseUrl}/auth/google`, "_self");
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -19,14 +30,20 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </div>
 
         <div className="space-y-4">
-          <button className="w-full flex items-center justify-center gap-3 bg-gray-800/50 hover:bg-gray-800 text-white py-3 px-4 rounded-lg border border-gray-700/50 transition duration-200">
-            <Github size={20} />
+          <button
+            onClick={handleGithubClick}
+            className="w-full flex items-center justify-center gap-3 bg-gray-800/50 hover:bg-gray-800 text-white py-3 px-4 rounded-lg border border-gray-700/50 transition duration-200"
+          >
+            <FaGithub size={20} />
             <span>Continue with GitHub</span>
           </button>
 
-          <button className="w-full flex items-center justify-center gap-3 bg-gray-800/50 hover:bg-gray-800 text-white py-3 px-4 rounded-lg border border-gray-700/50 transition duration-200">
-            <Mail size={20} />
-            <span>Continue with Email</span>
+          <button
+            onClick={handleGoogleClick}
+            className="w-full flex items-center justify-center gap-3 bg-gray-800/50 hover:bg-gray-800 text-white py-3 px-4 rounded-lg border border-gray-700/50 transition duration-200"
+          >
+            <FcGoogle size={20} />
+            <span>Continue with Google</span>
           </button>
 
           <p className="text-sm text-gray-400 text-center mt-6">

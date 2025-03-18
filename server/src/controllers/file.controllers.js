@@ -26,13 +26,40 @@ export const createNewFolder = asyncHandler(async (req, res) => {
 
 export const getAllFolders = asyncHandler(async (req, res) => {
   const user = req.user;
-  const query = `SELECT * FROM folder WHERE userId = $1`;
-  const values = [user.id];
 
+  if (!user || !user.id) {
+    return res.status(401).json(new ApiResponse(401, null, 'Unauthorized'));
+  }
+
+  const query = `
+    SELECT 
+        f.id,
+        f.name,
+        f.username,
+        f.createdAt,
+        f.updatedAt,
+        COALESCE(json_agg(
+            json_build_object(
+                'id', fi.id,
+                'name', fi.name,
+                'size', fi.size,
+                'type', fi.type,
+                'createdAt', fi.createdAt,
+                'updatedAt', fi.updatedAt
+            )
+        ) FILTER (WHERE fi.id IS NOT NULL), '[]'::json) AS files
+    FROM folder f
+    LEFT JOIN file fi ON f.id = fi.folderId
+    WHERE f.userId = $1
+    GROUP BY f.id;
+  `;
+
+  const values = [user.id];
   const result = await pool.query(query, values);
+
   return res
     .status(200)
-    .json(new ApiResponse(200, { data: result }, 'folder fetched'));
+    .json(new ApiResponse(200, result.rows, 'folders fetched'));
 });
 
 export const getAllFiles = asyncHandler(async (req, res) => {

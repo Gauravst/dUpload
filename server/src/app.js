@@ -18,6 +18,7 @@ import { ApiError } from './utils/ApiError.js';
 import authRouters from './routes/auth.routes.js';
 import uploadRouters from './routes/upload.routes.js';
 import downloadRouters from './routes/download.routes.js';
+import fileRouters from './routes/file.routes.js';
 
 // constants
 const app = express();
@@ -33,13 +34,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Add Session Middleware (Must be before Passport)
 app.use(
   session({
-    secret: process.env.SESSION_SECRET, // Ensure you have this in your .env file
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Set to true in production with HTTPS
+    cookie: { secure: false },
   })
 );
 
@@ -61,6 +61,7 @@ app.get(`${BASEPATH}/healthcheck`, (_, res) => {
 app.use(`${BASEPATH}/auth`, authRouters);
 app.use(`${BASEPATH}/upload`, uploadRouters);
 app.use(`${BASEPATH}/download`, downloadRouters);
+app.use(`${BASEPATH}/dashboard`, fileRouters);
 
 // Error middleware
 app.use(errorHandler);

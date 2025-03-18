@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import passport from '../utils/passport.js';
-import { getUser, logout } from '../controllers/auth.controllers.js';
+import { getUser, logoutUser } from '../controllers/auth.controllers.js';
+import { verifyAccessToken } from '../middlewares/auth.middeware.js';
 
 const router = Router();
 
@@ -59,7 +60,7 @@ router.get(
 );
 
 // Get User & Logout
-router.get('/user', getUser);
-router.get('/logout', logout);
+router.route('/user').get(verifyAccessToken, getUser);
+router.route('/logout').post(verifyAccessToken, logoutUser);
 
 export default router;
