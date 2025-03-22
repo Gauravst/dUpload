@@ -1,6 +1,8 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import pool from '../db/connect.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+import { ApiError } from '../utils/ApiError.js';
+import { cookieOptions } from '../constants.js';
 
 export const getUser = asyncHandler(async (req, res) => {
   return res
@@ -23,4 +25,15 @@ export const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie('accessToken', cookieOptions)
     .json(new ApiResponse(200, 'user logged out'));
+});
+
+export const authCallback = asyncHandler(async (req, res) => {
+  if (!req.user || !req.user.tokens) {
+    throw new ApiError(401, 'Authentication failed');
+  }
+
+  const { accessToken } = req.user.tokens;
+  return res
+    .cookie('accessToken', accessToken, cookieOptions)
+    .redirect(`${process.env.CLIENT_URL}/dashboard`);
 });

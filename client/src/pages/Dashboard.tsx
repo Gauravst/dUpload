@@ -29,7 +29,7 @@ const Dashboard = () => {
   useEffect(() => {
     const data = foldersData.find((item) => item.username === username);
     setCurrentFolder(data);
-  }, [username]);
+  }, [username, foldersData]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">

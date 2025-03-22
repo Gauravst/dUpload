@@ -11,6 +11,12 @@ export const getUserInfo = async (): Promise<User> => {
   }
 };
 
-export const logoutUser = async () => {
-  await api.post("/auth/logout");
+export const logoutUser = async (): Promise<boolean> => {
+  try {
+    const response = await api.post("/auth/logout");
+    return response.status == 200;
+  } catch (error) {
+    console.error("Error :", error);
+    throw error;
+  }
 };

@@ -11,39 +11,46 @@ import { loginClient } from '../utils/discord/client.js';
 import { downloadFile } from '../utils/discord/downloadFile.js';
 import { mergeFiles } from '../utils/mergeFile.js';
 import { deleteFiles } from '../utils/deleteFiles.js';
+import pool from '../db/connect.js';
 
 export const downloadData = asyncHandler(async (req, res) => {
-  const { fileId } = req.body;
+  const { fileId } = req.params;
   const botToken = process.env.BOT_TOKEN;
   const serverId = process.env.SERVER_ID;
   const channelId = process.env.CHANNEL_ID;
 
   // get file data db
   const query = `
-     SELECT 
-       f.id, 
-       f.folderId, 
-       f.name, 
-       f.size, 
-       f.type, 
-       f.createdAt AS file_createdAt, 
-       f.updatedAt AS file_updatedAt,
-       c.id AS chunk_id,
-       c.serverId, 
-       c.channelId, 
-       c.messageId, 
-       c.attachmentId, 
-       c.createdAt AS chunk_createdAt, 
-       c.updatedAt AS chunk_updatedAt
-     FROM file f
-     LEFT JOIN chunks c ON f.id = c.fileId
-     WHERE f.id = $1;
+  SELECT 
+    f.id, 
+    f.folderId, 
+    f.userId,
+    f.name, 
+    f.size, 
+    f.type, 
+    f.createdAt, 
+    f.updatedAt,
+    COALESCE(json_agg(
+        json_build_object(
+            'id', c.id,
+            'serverId', c.serverId,
+            'channelId', c.channelId,
+            'messageId', c.messageId,
+            'attachmentId', c.attachmentId,
+            'createdAt', c.createdAt,
+            'updatedAt', c.updatedAt
+        )
+    ) FILTER (WHERE c.id IS NOT NULL), '[]') AS chunks
+  FROM file f
+  LEFT JOIN chunks c ON f.id = c.fileId
+  WHERE f.id = $1
+  GROUP BY f.id;
 `;
 
   const fileInfoRes = await pool.query(query, [fileId]);
-  const fileInfo = fileInfoRes.rows;
+  const fileInfo = fileInfoRes.rows[0];
 
-  const messageId = fileInfo.id;
+  const messageId = fileInfo.chunks[0].messageId;
 
   const client = await loginClient(botToken);
   await getServer(serverId, client);
@@ -62,8 +69,8 @@ export const downloadData = asyncHandler(async (req, res) => {
     chunksPath.push(filePath);
   }
 
-  mergeFiles(chunksPath, `/tmp/${fileInfo.name}`);
-  deleteFiles(chunksPath);
+  mergeFiles(chunksPath, `../../tmp/${fileInfo.name}`);
+  // deleteFiles(chunksPath);
 
   const baseURL = process.env.BASE_URL;
   return res

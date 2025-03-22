@@ -5,6 +5,7 @@ import {
   getAllFolders,
   getOneFile,
   getOneFolder,
+  deleteOneFile,
 } from '../controllers/file.controllers.js';
 import { verifyAccessToken } from '../middlewares/auth.middeware.js';
 
@@ -16,5 +17,6 @@ router.route('/folder/:folderId').get(verifyAccessToken, getOneFolder);
 
 router.route('/file').get(verifyAccessToken, getAllFiles);
 router.route('/file/:fileId').get(verifyAccessToken, getOneFile);
+router.route('/file/:fileId').delete(verifyAccessToken, deleteOneFile);
 
 export default router;

@@ -20,3 +20,7 @@ export type FileProps = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+export type DownloadProps = {
+  fileUrl: string;
+};

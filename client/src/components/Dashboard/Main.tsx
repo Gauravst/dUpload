@@ -1,11 +1,10 @@
+import { downloadFile } from "@/services/downloadService";
+import { deleteFile } from "@/services/folderService";
 import { FolderProps } from "@/types";
-import {
-  FolderOpen,
-  Download,
-  Share2,
-  Trash2,
-  MoreVertical,
-} from "lucide-react";
+import { Download, Share2, Trash2, MoreVertical, File } from "lucide-react";
+import { DeleteFileModal } from "./DeleteFileModal";
+import { useState } from "react";
+import { DownloadFileModal } from "./DonloadFileModal";
 
 type Props = {
   data?: FolderProps;
@@ -14,8 +13,49 @@ type Props = {
 export const Main = ({ data }: Props) => {
   const filesData = data?.files;
   const folderName = data?.name;
+  const [deleteFileName, setDeleteFileName] = useState("");
+  const [deleteFileId, setDeleteFileId] = useState(0);
+  const [isDeleteOpen, setDeleteOpen] = useState(false);
+  const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
+  const [donloadFileUrl, setDonloadFileUrl] = useState("");
+  const [donloadFileName, setDonloadFileName] = useState("");
+
+  const handleDownload = async (id: number, name: string) => {
+    setDonloadFileName(name);
+    setDownloadModalOpen(true);
+    const res = await downloadFile(id);
+    setDonloadFileUrl(res.fileUrl);
+  };
+
+  const hanldeDeleteButton = async (fileId: number, fileName: string) => {
+    setDeleteFileName(fileName);
+    setDeleteFileId(fileId);
+    setDeleteOpen(true);
+  };
+
+  const handleDelete = async () => {
+    const res = await deleteFile(deleteFileId);
+    if (res) {
+      setDeleteOpen(false);
+    }
+  };
+
   return (
     <main className="ml-64 p-8">
+      <DeleteFileModal
+        isOpen={isDeleteOpen}
+        fileName={deleteFileName}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDelete}
+      />
+
+      <DownloadFileModal
+        isOpen={isDownloadModalOpen}
+        fileName={donloadFileName}
+        fileUrl={donloadFileUrl}
+        onClose={() => setDownloadModalOpen(false)}
+      />
+
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl font-bold mb-8">{folderName}</h1>
 
@@ -29,23 +69,32 @@ export const Main = ({ data }: Props) => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <FolderOpen className="w-8 h-8 text-blue-500" />
+                    <File className="mr-2 w-8 h-8 text-blue-500" />
                     <div>
                       <h3 className="font-medium">{file.name}</h3>
                       <p className="text-sm text-gray-400">
-                        {file.size} • {file.type}
+                        {file.size < 1024
+                          ? `${file.size} KB`
+                          : `${file.size / 1024} MB`}{" "}
+                        • {file.type}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <button className="p-2 hover:bg-gray-700 rounded-lg">
+                    <button
+                      onClick={() => handleDownload(file.id, file.name)}
+                      className="p-2 hover:bg-gray-700 rounded-lg"
+                    >
                       <Download size={18} />
                     </button>
                     <button className="p-2 hover:bg-gray-700 rounded-lg">
                       <Share2 size={18} />
                     </button>
-                    <button className="p-2 hover:bg-gray-700 rounded-lg">
+                    <button
+                      onClick={() => hanldeDeleteButton(file.id, file.name)}
+                      className="p-2 hover:bg-gray-700 rounded-lg"
+                    >
                       <Trash2 size={18} />
                     </button>
                     <button className="p-2 hover:bg-gray-700 rounded-lg">

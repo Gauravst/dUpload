@@ -5,6 +5,8 @@ import { upload } from '../middlewares/multer.middleware.js';
 
 const router = Router();
 
-router.route('/').post(verifyAccessToken, upload.array('file', 4), uploadData);
+router
+  .route('/:folderId')
+  .post(verifyAccessToken, upload.array('file', 4), uploadData);
 
 export default router;

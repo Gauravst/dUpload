@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-export const mergeFiles = async (chunkPaths, outputFilePath) => {
+export const mergeFiles = async (chunkPaths, fileName) => {
   const writeStream = fs.createWriteStream(outputFilePath);
 
   for (const chunkPath of chunkPaths) {

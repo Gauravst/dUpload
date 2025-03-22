@@ -24,10 +24,11 @@ export const BASEPATH = '/api';
 export const PORT = 5000;
 
 // cookie options
+const isProduction = process.env.NODE_ENV === 'production';
 export const cookieOptions = {
-  secure: true,
-  httpOnly: true,
-  sameSite: 'none',
   path: '/',
-  maxAge: 864000000, // 10 days
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'None' : 'Lax',
+  maxAge: 30 * 24 * 60 * 60 * 1000,
 };

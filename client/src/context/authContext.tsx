@@ -1,4 +1,4 @@
-import { getUserInfo } from "@/services/authService";
+import { getUserInfo, logoutUser } from "@/services/authService";
 import { User } from "@/types";
 import {
   createContext,
@@ -10,6 +10,7 @@ import {
 
 interface AuthContextType {
   user: User | null;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,8 +34,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
 
+  const logout = async () => {
+    try {
+      await logoutUser();
+      setUser(null);
+    } catch (error) {
+      console.error("Failed to logout", error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 

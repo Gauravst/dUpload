@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import pool from '../db/connect.js';
+import { cookieOptions } from '../constants.js';
 
 export const ensureAuth = (req, res, next) => {
   if (req.isAuthenticated()) {
@@ -20,14 +21,25 @@ export const verifyAccessToken = async (req, res, next) => {
   }
 
   jwt.verify(accessToken, process.env.JWT_SECRET, async (err, decoded) => {
-    if (err && err.name === 'TokenExpiredError') {
-      try {
-        const userQuery = `
-          SELECT id, strategy, refreshToken FROM users WHERE id = $1;
-        `;
-        const { rows } = await pool.query(userQuery, [decoded.id]);
+    if (!err) {
+      // Token is valid, proceed with user data
+      req.user = { id: decoded.id, strategy: decoded.strategy };
+      return next();
+    }
 
-        if (rows.length === 0 || !rows[0].refreshToken) {
+    if (err.name === 'TokenExpiredError') {
+      // Decode token manually to extract user data
+      const expiredDecoded = jwt.decode(accessToken);
+      if (!expiredDecoded || !expiredDecoded.id) {
+        return res.status(401).json({ message: 'Invalid token payload' });
+      }
+
+      try {
+        // Fetch refresh token from DB
+        const userQuery = `SELECT id, strategy, refreshToken FROM users WHERE id = $1;`;
+        const { rows } = await pool.query(userQuery, [expiredDecoded.id]);
+
+        if (rows.length === 0 || !rows[0].refreshtoken) {
           return res
             .status(403)
             .json({ message: 'Refresh token invalid or not found' });
@@ -35,11 +47,10 @@ export const verifyAccessToken = async (req, res, next) => {
 
         const user = rows[0];
 
-        // Verify refresh token from DB
         jwt.verify(
-          user.refreshToken,
+          user.refreshtoken,
           process.env.JWT_REFRESH_SECRET,
-          (refreshErr, refreshDecoded) => {
+          (refreshErr) => {
             if (refreshErr) {
               return res
                 .status(403)
@@ -54,12 +65,7 @@ export const verifyAccessToken = async (req, res, next) => {
             );
 
             // Set new access token in cookies
-            res.cookie('accessToken', newAccessToken, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'Strict',
-            });
-
+            res.cookie('accessToken', newAccessToken, cookieOptions);
             req.user = { id: user.id, strategy: user.strategy };
             return next();
           }
@@ -68,13 +74,8 @@ export const verifyAccessToken = async (req, res, next) => {
         console.error('Error fetching refresh token from DB:', error);
         return res.status(500).json({ message: 'Internal server error' });
       }
+    } else {
+      return res.status(403).json({ message: 'Invalid token' });
     }
-
-    if (err) {
-      return res.status(403).json({ message: 'Invalid access token' });
-    }
-
-    req.user = decoded;
-    next();
   });
 };

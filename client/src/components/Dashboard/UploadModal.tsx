@@ -15,13 +15,13 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const droppedFiles = Array.from(event.dataTransfer.files);
-    setFiles((prev) => [...prev, ...droppedFiles]); // Append new files
+    setFiles((prev) => [...prev, ...droppedFiles]);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const selectedFiles = Array.from(event.target.files);
-      setFiles((prev) => [...prev, ...selectedFiles]); // Append new files
+      setFiles((prev) => [...prev, ...selectedFiles]);
     }
   };
 
@@ -33,30 +33,36 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
     }
   };
 
+  const handleClose = () => {
+    setFiles([]);
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-gray-900/90 backdrop-blur-lg p-8 rounded-2xl w-full max-w-md border border-gray-700/50 shadow-xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Upload File</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
+          <button
+            onClick={handleClose}
+            className="text-gray-400 hover:text-white"
+          >
             <X size={24} />
           </button>
         </div>
 
-        {/* Drag & Drop Area */}
         <div
           className="border-2 border-dashed border-gray-600/50 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
-          onClick={() => document.getElementById("fileInput")?.click()} // Trigger input on click
+          onClick={() => document.getElementById("fileInput")?.click()}
         >
           <UploadCloud size={40} className="text-gray-400 mb-3" />
           <p className="text-gray-300 text-sm">Drag & drop files here</p>
           <p className="text-gray-500 text-xs">or click to select</p>
         </div>
 
-        {/* Hidden File Input */}
         <input
           type="file"
           multiple
@@ -65,7 +71,6 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
           onChange={handleFileChange}
         />
 
-        {/* Select Files Button */}
         <label
           htmlFor="fileInput"
           className="mt-4 w-full bg-gray-800/50 hover:bg-gray-800 text-white py-3 px-4 rounded-lg border border-gray-700/50 transition duration-200 text-center cursor-pointer block"
@@ -73,7 +78,6 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
           Select Files
         </label>
 
-        {/* File List */}
         {files.length > 0 && (
           <div className="mt-4 max-h-40 overflow-auto space-y-2 bg-gray-800 p-2 rounded-lg">
             {files.map((file, index) => (
@@ -84,7 +88,6 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
           </div>
         )}
 
-        {/* Upload Button */}
         <button
           onClick={handleUpload}
           disabled={files.length === 0}

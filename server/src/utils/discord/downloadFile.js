@@ -1,10 +1,19 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import axios from 'axios';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export const downloadFile = async (fileName, chunkName, url) => {
-  const tempDir = path.join(__dirname, 'tmp');
+  const folderNewPath = `x${fileName}`;
+  const tempDir = path.join(__dirname, '../../../tmp');
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir, { recursive: true });
   }
 
-  const fileDir = path.join(tempDir, fileName);
+  const fileDir = path.join(tempDir, folderNewPath);
 
   if (!fs.existsSync(fileDir)) {
     fs.mkdirSync(fileDir, { recursive: true });
