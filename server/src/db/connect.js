@@ -1,17 +1,23 @@
-// This function is responsible for the connection with the DB.
-import { Pool } from "pg";
+import pkg from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const { Pool } = pkg;
+const pool = new Pool({
+  user: process.env.PG_USER,
+  host: process.env.PG_HOST,
+  database: process.env.PG_DATABASE,
+  password: process.env.PG_PASSWORD,
+  port: process.env.PG_PORT,
+  ssl: process.env.PG_SSL === 'true' ? { rejectUnauthorized: false } : false,
+});
 
 export const connectDB = async () => {
-  const pool = new Pool({
-    user: "your_db_user", // Replace with your database user
-    host: "localhost", //  where your database is running
-    database: "your_db_name", // Your database name
-    password: "your_db_password", // Your database user's password
-    port: 5432, // Default PostgreSQL port
-  });
   try {
+    await pool.connect();
   } catch (error) {
-    console.log("db connection FAILED ", error);
-    process.exit(1);
+    throw error;
   }
 };
+
+export default pool;
