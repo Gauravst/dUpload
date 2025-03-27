@@ -3,10 +3,11 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
-import passport from 'passport'; // Import Passport.js
+import passport from 'passport';
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
 // module imports
 import { BASEPATH } from './constants.js';
@@ -22,6 +23,7 @@ import fileRouters from './routes/file.routes.js';
 
 // constants
 const app = express();
+const __dirname = path.resolve();
 
 // middlewares
 app.use(
@@ -46,6 +48,9 @@ app.use(
 // Initialize Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Serve static files from the 'tmp' folder
+app.use('/tmp', express.static(path.join(__dirname, 'tmp')));
 
 // Test route
 app.get(`${BASEPATH}/healthcheck`, (_, res) => {

@@ -10,30 +10,20 @@ interface DownloadModalProps {
 }
 
 const steps = [
-  "Getting data",
-  "Downloading file from Discord",
-  "Merging file",
-  "Processing file",
+  "Uploading file in server",
+  "Crating file chunks",
+  "Uplading ino discord",
+  "Saving Meta data",
 ];
 
-export function DownloadFileModal({
+export function UplaodLoding({
   isOpen,
   fileName,
-  fileId,
   onClose,
 }: DownloadModalProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [isProcessing, setIsProcessing] = useState(true);
   const [fileUrl, setFileUrl] = useState("");
-
-  const downloadFileFunc = async () => {
-    const res = await downloadFile(fileId);
-    setFileUrl(res.fileUrl);
-  };
-
-  useEffect(() => {
-    downloadFileFunc();
-  }, [fileId]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -63,7 +53,7 @@ export function DownloadFileModal({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-gray-900/90 backdrop-blur-lg p-6 rounded-2xl w-full max-w-md border border-gray-700/50 shadow-xl min-h-[280px]">
         <div className="flex justify-between items-center">
-          <h3 className="text-xl font-semibold text-white">Download File</h3>
+          <h3 className="text-xl font-semibold text-white">Uploading File</h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition"
@@ -90,49 +80,6 @@ export function DownloadFileModal({
               <span className="text-gray-100 font-medium">{step}</span>
             </p>
           ))}
-        </div>
-
-        <div className="flex justify-end space-x-3 mt-6">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-400 hover:text-white transition"
-          >
-            Cancel
-          </button>
-          <a
-            href={isProcessing || !fileUrl ? "#" : fileUrl}
-            download={fileName}
-            rel="noopener noreferrer"
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition ${
-              isProcessing || !fileUrl
-                ? "bg-gray-700 cursor-not-allowed text-gray-400"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
-            onClick={(e) => {
-              if (isProcessing || !fileUrl) {
-                e.preventDefault();
-              } else {
-                e.preventDefault();
-                fetch(fileUrl)
-                  .then((response) => response.blob())
-                  .then((blob) => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                  });
-              }
-            }}
-          >
-            <Download size={18} />
-            <span>
-              {isProcessing || !fileUrl ? "Processing..." : "Download"}
-            </span>
-          </a>
         </div>
       </div>
     </div>

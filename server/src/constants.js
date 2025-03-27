@@ -14,6 +14,7 @@ export const allowedImgExtensions = {
   mp3: '.mp3',
   pdf: '.pdf',
   txt: '.txt',
+  svg: '.svg',
 };
 export const allowedImgExtensionsEnum = Object.values(allowedImgExtensions);
 

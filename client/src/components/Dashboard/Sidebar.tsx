@@ -1,5 +1,12 @@
 import { FolderProps } from "@/types";
-import { LogOut, Upload, Plus, Folder, FolderOpen } from "lucide-react";
+import {
+  LogOut,
+  Upload,
+  Plus,
+  Folder,
+  FolderOpen,
+  MoreVertical,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { UploadModal } from "./UploadModal";
 import { useState } from "react";
@@ -82,20 +89,28 @@ export const Sidebar = ({ data, username }: Props) => {
           <div className="mt-8 space-y-2">
             {data?.map((folder, index) => {
               return (
-                <button
-                  key={index}
-                  onClick={() => {
-                    navigate(`/dashboard/${folder.username}`);
-                  }}
-                  className={`${username == folder.username && "bg-gray-700/50 text-blue-400"} w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700/50`}
+                <div
+                  className={`flex ${username == folder.username && "bg-gray-700/50 text-blue-400 rounded-lg hover:bg-gray-700/50"}`}
                 >
-                  {username == folder.username ? (
-                    <FolderOpen size={20} className="text-blue-400" />
-                  ) : (
-                    <Folder size={20} />
-                  )}
-                  <span>{folder.name}</span>
-                </button>
+                  <button
+                    key={index}
+                    onClick={() => {
+                      navigate(`/dashboard/${folder.username}`);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-2`}
+                  >
+                    {username == folder.username ? (
+                      <FolderOpen size={20} className="text-blue-400" />
+                    ) : (
+                      <Folder size={20} />
+                    )}
+                    <span>{folder.name}</span>
+                  </button>
+
+                  <button className="p-2 hover:bg-gray-700 rounded-lg">
+                    <MoreVertical size={18} />
+                  </button>
+                </div>
               );
             })}
           </div>

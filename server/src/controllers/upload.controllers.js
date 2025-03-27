@@ -5,6 +5,8 @@ import { getServer, getChannel } from '../utils/discord/getDiscordData.js';
 import { loginClient } from '../utils/discord/client.js';
 import { AttachmentBuilder } from 'discord.js';
 import { makeChunks } from '../utils/makeChunks.js';
+import { fileNameFormat } from '../utils/fileNameFormat.js';
+import { deleteFiles } from '../utils/deleteFiles.js';
 import pool from '../db/connect.js';
 
 export const uploadData = asyncHandler(async (req, res) => {
@@ -22,7 +24,7 @@ export const uploadData = asyncHandler(async (req, res) => {
 
   // make chunks of file is needed
   let chunks;
-  if (files[0].size / 1024 > 5120) {
+  if (files[0].size / 1024 > 2048) {
     chunks = await makeChunks(files, 1024);
   } else {
     chunks = files;
@@ -49,7 +51,7 @@ export const uploadData = asyncHandler(async (req, res) => {
   const fileValues = [
     folderId,
     user.id,
-    files[0].originalname,
+    fileNameFormat(files[0].originalname),
     Math.floor(files[0].size / 1024),
     files[0].mimetype,
   ];
@@ -84,13 +86,21 @@ export const uploadData = asyncHandler(async (req, res) => {
   const resultRes = await pool.query(query, values);
   const result = resultRes.rows;
 
+  // delete server chunks
+  const deleteChunksPaths = [];
+  chunks.map((file) => {
+    deleteChunksPaths.push(file.path);
+  });
+
+  await deleteFiles(deleteChunksPaths);
+
   return res.status(200).json(
     new ApiResponse(
       200,
       {
         id: result[0].id,
         folderId: folderId,
-        name: files[0].originalname,
+        name: fileNameFormat(files[0].originalname),
         size: Math.floor(files[0].size / 1024),
         type: files[0].mimetype,
       },

@@ -69,8 +69,8 @@ export const downloadData = asyncHandler(async (req, res) => {
     chunksPath.push(filePath);
   }
 
-  mergeFiles(chunksPath, `../../tmp/${fileInfo.name}`);
-  // deleteFiles(chunksPath);
+  await mergeFiles(chunksPath, fileInfo.name);
+  await deleteFiles(chunksPath);
 
   const baseURL = process.env.BASE_URL;
   return res

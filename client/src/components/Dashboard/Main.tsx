@@ -17,14 +17,13 @@ export const Main = ({ data }: Props) => {
   const [deleteFileId, setDeleteFileId] = useState(0);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
-  const [donloadFileUrl, setDonloadFileUrl] = useState("");
   const [donloadFileName, setDonloadFileName] = useState("");
+  const [downloadFileId, setDownloadFileId] = useState(0);
 
   const handleDownload = async (id: number, name: string) => {
     setDonloadFileName(name);
+    setDownloadFileId(id);
     setDownloadModalOpen(true);
-    const res = await downloadFile(id);
-    setDonloadFileUrl(res.fileUrl);
   };
 
   const hanldeDeleteButton = async (fileId: number, fileName: string) => {
@@ -52,7 +51,7 @@ export const Main = ({ data }: Props) => {
       <DownloadFileModal
         isOpen={isDownloadModalOpen}
         fileName={donloadFileName}
-        fileUrl={donloadFileUrl}
+        fileId={downloadFileId}
         onClose={() => setDownloadModalOpen(false)}
       />
 
@@ -75,8 +74,11 @@ export const Main = ({ data }: Props) => {
                       <p className="text-sm text-gray-400">
                         {file.size < 1024
                           ? `${file.size} KB`
-                          : `${file.size / 1024} MB`}{" "}
-                        • {file.type}
+                          : `${(file.size / 1024).toFixed(2)} MB`}{" "}
+                        •{" "}
+                        {file.type.split("/")[1].charAt(0).toUpperCase() +
+                          file.type.split("/")[1].slice(1)}{" "}
+                        • {"Private"}
                       </p>
                     </div>
                   </div>
