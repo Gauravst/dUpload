@@ -11,6 +11,7 @@ export const createNewFolder = asyncHandler(async (req, res) => {
   const createFolderQuery = `
     INSERT INTO folder (userId, name, username)
     VALUES ($1, $2, $3)
+    RETURNING *
 `;
   const createFolderValues = [user.id, name, username];
   const createFolderRes = await pool.query(
@@ -104,6 +105,19 @@ export const deleteOneFile = asyncHandler(async (req, res) => {
 
   const query = `DELETE FROM file WHERE userId = $1 AND id = $2`;
   const values = [user.id, fileId];
+
+  const result = await pool.query(query, values);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { data: result[0] }, 'file deleted'));
+});
+
+export const deleteOneFolder = asyncHandler(async (req, res) => {
+  const { folderId } = req.params;
+  const user = req.user;
+
+  const query = `DELETE FROM folder WHERE userId = $1 AND id = $2`;
+  const values = [user.id, folderId];
 
   const result = await pool.query(query, values);
   return res

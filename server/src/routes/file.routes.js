@@ -3,6 +3,7 @@ import {
   createNewFolder,
   getAllFiles,
   getAllFolders,
+  deleteOneFolder,
   getOneFile,
   getOneFolder,
   deleteOneFile,
@@ -14,6 +15,7 @@ const router = Router();
 router.route('/folder').get(verifyAccessToken, getAllFolders);
 router.route('/folder').post(verifyAccessToken, createNewFolder);
 router.route('/folder/:folderId').get(verifyAccessToken, getOneFolder);
+router.route('/folder/:folderId').delete(verifyAccessToken, deleteOneFolder);
 
 router.route('/file').get(verifyAccessToken, getAllFiles);
 router.route('/file/:fileId').get(verifyAccessToken, getOneFile);

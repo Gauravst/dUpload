@@ -2,7 +2,10 @@ import { Upload, Shield, Zap } from "lucide-react";
 
 const FeaturesSection = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <section
+      id="features"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
+    >
       <div className="grid md:grid-cols-3 gap-8">
         <div className="bg-gray-800/50 backdrop-blur-lg p-6 rounded-xl border border-gray-700/50">
           <Upload className="w-12 h-12 text-blue-500 mb-4" />
@@ -31,7 +34,7 @@ const FeaturesSection = () => {
           </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

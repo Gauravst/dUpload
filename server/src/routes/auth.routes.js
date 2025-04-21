@@ -16,7 +16,7 @@ router
 
 // githhub auth route
 router
-  .route('/google')
+  .route('/github')
   .get(passport.authenticate('github', { scope: ['user:email'] }));
 
 // google auth callback

@@ -32,7 +32,9 @@ export function DownloadFileModal({
   };
 
   useEffect(() => {
-    downloadFileFunc();
+    if (fileId != 0) {
+      downloadFileFunc();
+    }
   }, [fileId]);
 
   useEffect(() => {

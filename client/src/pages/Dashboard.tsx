@@ -34,7 +34,11 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Sidebar */}
-      <Sidebar data={foldersData} username={username} />
+      <Sidebar
+        data={foldersData}
+        username={username}
+        setFoldersData={setFoldersData}
+      />
 
       {/* Main Content */}
       <Main data={currentFolder} />

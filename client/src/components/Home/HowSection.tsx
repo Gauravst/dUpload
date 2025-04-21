@@ -2,7 +2,10 @@ import { Upload, Users, Globe2 } from "lucide-react";
 
 const HowSection = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <section
+      id="working"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
+    >
       <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
       <div className="grid md:grid-cols-3 gap-8">
         <div className="text-center">
@@ -33,7 +36,7 @@ const HowSection = () => {
           </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -18,9 +18,10 @@ import { useAuth } from "@/context/authContext";
 type Props = {
   data: FolderProps[];
   username?: string;
+  setFoldersData: (data: FolderProps[]) => void;
 };
 
-export const Sidebar = ({ data, username }: Props) => {
+export const Sidebar = ({ data, username, setFoldersData }: Props) => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [isUploadOpen, setUploadOpen] = useState(false);
@@ -36,10 +37,11 @@ export const Sidebar = ({ data, username }: Props) => {
 
   const handleCreateFolder = async (name: string, username: string) => {
     const res = await createFolder(name, username);
-    if (res) {
+    if (res.status) {
+      console.log("hello", res.data);
       setCreateFolderOpen(false);
+      setFoldersData((prev) => [...prev, res.data]);
       navigate(`/dashboard/${username}`);
-      window.location.reload();
     }
   };
 
@@ -86,10 +88,11 @@ export const Sidebar = ({ data, username }: Props) => {
             <span>Create Folder</span>
           </button>
 
-          <div className="mt-8 space-y-2">
+          <div className="mt-8 space-y-2 overflow-y-auto h-[60vh]">
             {data?.map((folder, index) => {
               return (
                 <div
+                  key={index}
                   className={`flex ${username == folder.username && "bg-gray-700/50 text-blue-400 rounded-lg hover:bg-gray-700/50"}`}
                 >
                   <button

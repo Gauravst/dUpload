@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-800/50 backdrop-blur-lg border-t border-gray-700/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Upload className="w-8 h-8 text-blue-500" />
@@ -95,9 +95,15 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-700/50 mt-12 pt-8 text-center text-gray-400">
+        <div className="border-t border-gray-700/50 flex flex-col md:flex-row w-full justify-center items-center mt-12 pt-8 text-center text-gray-400">
           <p>
-            &copy; {new Date().getFullYear()} D Upload. All rights reserved.
+            &copy; {new Date().getFullYear()} D Upload. All rights reserved |
+          </p>
+          <p className="ml-1">
+            Made with Love By{" "}
+            <a href="https://me.gauravst.in" className="underline">
+              Gaurav
+            </a>
           </p>
         </div>
       </div>

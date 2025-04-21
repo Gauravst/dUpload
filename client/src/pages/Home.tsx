@@ -30,7 +30,7 @@ const Home = () => {
       setIsLoginOpen(false);
       navigate("/dashboard/main", { replace: true });
     }
-  }, [user]);
+  }, [user, login, navigate]);
 
   const openLogin = () => {
     setIsLoginOpen(true);

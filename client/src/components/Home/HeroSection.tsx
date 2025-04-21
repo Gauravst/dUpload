@@ -12,7 +12,7 @@ const HeroSection = ({ onGetStarted, isLoggedIn }: Props) => {
   };
 
   return (
-    <div className="relative pt-20">
+    <section id="home" className="relative pt-20">
       <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
@@ -33,7 +33,7 @@ const HeroSection = ({ onGetStarted, isLoggedIn }: Props) => {
           </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
