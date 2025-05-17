@@ -18,8 +18,8 @@ export const createFolder = async (
   try {
     const response = await api.post("/dashboard/folder", { name, username });
     return {
-      status: response.data.status === 200 || response.data.status === 201,
-      data: response.data.data,
+      status: response.status === 200 || response.status === 201,
+      data: response.data,
     };
   } catch (error) {
     console.error("Error :", error);

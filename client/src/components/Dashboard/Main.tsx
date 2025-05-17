@@ -1,17 +1,18 @@
 import { downloadFile } from "@/services/downloadService";
 import { deleteFile } from "@/services/folderService";
-import { FolderProps } from "@/types";
+import { FileProps, FolderProps } from "@/types";
 import { Download, Share2, Trash2, MoreVertical, File } from "lucide-react";
 import { DeleteFileModal } from "./DeleteFileModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DownloadFileModal } from "./DonloadFileModal";
+import { toast } from "react-toastify";
 
 type Props = {
   data?: FolderProps;
 };
 
 export const Main = ({ data }: Props) => {
-  const filesData = data?.files;
+  const [filesData, setFilesData] = useState<FileProps[]>([]);
   const folderName = data?.name;
   const [deleteFileName, setDeleteFileName] = useState("");
   const [deleteFileId, setDeleteFileId] = useState(0);
@@ -19,6 +20,12 @@ export const Main = ({ data }: Props) => {
   const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
   const [donloadFileName, setDonloadFileName] = useState("");
   const [downloadFileId, setDownloadFileId] = useState(0);
+
+  useEffect(() => {
+    if (data?.files) {
+      setFilesData(data.files);
+    }
+  }, [data]);
 
   const handleDownload = async (id: number, name: string) => {
     setDonloadFileName(name);
@@ -36,11 +43,13 @@ export const Main = ({ data }: Props) => {
     const res = await deleteFile(deleteFileId);
     if (res) {
       setDeleteOpen(false);
+      setFilesData((prev) => prev.filter((file) => file.id !== deleteFileId));
+      toast.success(`"${deleteFileName}" was deleted`);
     }
   };
 
   return (
-    <main className="ml-64 p-8">
+    <main className="ml-72 p-8">
       <DeleteFileModal
         isOpen={isDeleteOpen}
         fileName={deleteFileName}
