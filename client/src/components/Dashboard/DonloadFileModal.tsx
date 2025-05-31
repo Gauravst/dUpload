@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { X, Download, CheckCircle } from "lucide-react";
 import { downloadFile } from "@/services/downloadService";
 
@@ -28,6 +29,7 @@ export function DownloadFileModal({
 
   const downloadFileFunc = async () => {
     const res = await downloadFile(fileId);
+    console.log("data---", res);
     setFileUrl(res.fileUrl);
   };
 
@@ -54,7 +56,7 @@ export function DownloadFileModal({
           return prev;
         }
       });
-    }, 3000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [isOpen, fileUrl]);
@@ -111,12 +113,17 @@ export function DownloadFileModal({
                 : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
             onClick={(e) => {
-              if (isProcessing || !fileUrl) {
-                e.preventDefault();
-              } else {
-                e.preventDefault();
+              e.preventDefault();
+              if (isProcessing || !fileUrl) return;
+
+              try {
                 fetch(fileUrl)
-                  .then((response) => response.blob())
+                  .then((response) => {
+                    if (!response.ok) {
+                      throw new Error("Network response was not ok");
+                    }
+                    return response.blob();
+                  })
                   .then((blob) => {
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement("a");
@@ -126,7 +133,14 @@ export function DownloadFileModal({
                     a.click();
                     window.URL.revokeObjectURL(url);
                     document.body.removeChild(a);
+                  })
+                  .catch((err) => {
+                    console.error("Download failed:", err);
+                    alert("Download failed. Please try again.");
                   });
+              } catch (err) {
+                console.error("Unexpected error:", err);
+                alert("Something went wrong.");
               }
             }}
           >
@@ -135,6 +149,9 @@ export function DownloadFileModal({
               {isProcessing || !fileUrl ? "Processing..." : "Download"}
             </span>
           </a>
+          <Link to={"http://localhost:5000/tmp/x.png"} target="_blank" download>
+            Download
+          </Link>
         </div>
       </div>
     </div>

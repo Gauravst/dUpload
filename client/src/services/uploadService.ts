@@ -3,7 +3,7 @@ import api from "./api";
 export const uploadFiles = async (
   files: File[],
   folderId?: number,
-): Promise<boolean> => {
+): Promise<number> => {
   const formData = new FormData();
   files.forEach((file) => formData.append("file", file));
 
@@ -14,7 +14,7 @@ export const uploadFiles = async (
       },
     });
 
-    return response.status === 200 || response.status === 201;
+    return response.status;
   } catch (error) {
     console.error("Error uploading files:", error);
     throw error;

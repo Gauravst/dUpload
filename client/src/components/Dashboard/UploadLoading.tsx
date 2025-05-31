@@ -1,29 +1,23 @@
 import { useState, useEffect } from "react";
-import { X, Download, CheckCircle } from "lucide-react";
-import { downloadFile } from "@/services/downloadService";
+import { X, CheckCircle } from "lucide-react";
 
-interface DownloadModalProps {
+interface UploadModalProps {
   isOpen: boolean;
   fileName: string;
-  fileId: number;
   onClose: () => void;
 }
 
 const steps = [
   "Uploading file in server",
   "Crating file chunks",
-  "Uplading ino discord",
+  "Uplading into discord",
   "Saving Meta data",
 ];
 
-export function UplaodLoding({
-  isOpen,
-  fileName,
-  onClose,
-}: DownloadModalProps) {
+export function UplaodLoding({ isOpen, fileName, onClose }: UploadModalProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [isProcessing, setIsProcessing] = useState(true);
-  const [fileUrl, setFileUrl] = useState("");
+  console.log(isProcessing);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -35,17 +29,15 @@ export function UplaodLoding({
         if (prev < steps.length - 1) {
           return prev + 1;
         } else {
-          if (fileUrl) {
-            setIsProcessing(false);
-            clearInterval(interval);
-          }
-          return prev;
+          setIsProcessing(false);
+          clearInterval(interval);
         }
+        return prev;
       });
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [isOpen, fileUrl]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

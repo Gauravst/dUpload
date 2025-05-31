@@ -22,7 +22,7 @@ export const createNewFolder = asyncHandler(async (req, res) => {
   // return folder data
   return res
     .status(200)
-    .json(new ApiResponse(200, { data: createFolderRes[0] }, 'folder created'));
+    .json(new ApiResponse(200, createFolderRes.rows[0], 'folder created'));
 });
 
 export const getAllFolders = asyncHandler(async (req, res) => {

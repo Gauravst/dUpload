@@ -4,9 +4,9 @@ export type User = {
 };
 
 export type FolderProps = {
-  id: number;
-  name: string;
-  username: string;
+  id?: number;
+  name?: string;
+  username?: string;
   files?: FileProps[];
   createdAt?: string;
   updatedAt?: string;

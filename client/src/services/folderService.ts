@@ -19,7 +19,7 @@ export const createFolder = async (
     const response = await api.post("/dashboard/folder", { name, username });
     return {
       status: response.status === 200 || response.status === 201,
-      data: response.data,
+      data: response.data.data,
     };
   } catch (error) {
     console.error("Error :", error);
@@ -27,7 +27,7 @@ export const createFolder = async (
   }
 };
 
-export const deleteFolder = async (id: number): Promise<boolean> => {
+export const DeleteFolder = async (id: number): Promise<boolean> => {
   try {
     const response = await api.delete(`/dashboard/folder/${id}`);
     return response.status === 200 || response.status === 201;
