@@ -88,7 +88,7 @@ export const Main = () => {
         <div className="grid gap-4">
           {/* File Card */}
           {filesData &&
-            filesData?.map((file, index) => {
+            [...filesData].reverse().map((file, index) => {
               return (
                 <div
                   key={index}

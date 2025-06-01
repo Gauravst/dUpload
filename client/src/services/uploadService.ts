@@ -1,9 +1,10 @@
+import { FileProps } from "@/types";
 import api from "./api";
 
 export const uploadFiles = async (
   files: File[],
   folderId?: number,
-): Promise<number> => {
+): Promise<{ status: number; data: FileProps }> => {
   const formData = new FormData();
   files.forEach((file) => formData.append("file", file));
 
@@ -14,7 +15,7 @@ export const uploadFiles = async (
       },
     });
 
-    return response.status;
+    return { status: response.status, data: response.data.data };
   } catch (error) {
     console.error("Error uploading files:", error);
     throw error;

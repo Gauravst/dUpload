@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { X, Download, CheckCircle } from "lucide-react";
 import { downloadFile } from "@/services/downloadService";
+import { toast } from "react-toastify";
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -29,7 +29,7 @@ export function DownloadFileModal({
 
   const downloadFileFunc = async () => {
     const res = await downloadFile(fileId);
-    console.log("data---", res);
+    setStepIndex(4);
     setFileUrl(res.fileUrl);
   };
 
@@ -60,6 +60,42 @@ export function DownloadFileModal({
 
     return () => clearInterval(interval);
   }, [isOpen, fileUrl]);
+
+  const handleDownloadClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (isProcessing || !fileUrl) return;
+
+    try {
+      fetch(fileUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.blob();
+        })
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          toast.success("File downloaded successfully");
+          onClose();
+        })
+        .catch((err) => {
+          console.error("Download failed:", err);
+          toast.error(`Download failed. Try again`);
+          onClose();
+        });
+    } catch (err) {
+      onClose();
+      console.error("Unexpected error:", err);
+      toast.error("Something went wrong");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -112,46 +148,13 @@ export function DownloadFileModal({
                 ? "bg-gray-700 cursor-not-allowed text-gray-400"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
-            onClick={(e) => {
-              e.preventDefault();
-              if (isProcessing || !fileUrl) return;
-
-              try {
-                fetch(fileUrl)
-                  .then((response) => {
-                    if (!response.ok) {
-                      throw new Error("Network response was not ok");
-                    }
-                    return response.blob();
-                  })
-                  .then((blob) => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                  })
-                  .catch((err) => {
-                    console.error("Download failed:", err);
-                    alert("Download failed. Please try again.");
-                  });
-              } catch (err) {
-                console.error("Unexpected error:", err);
-                alert("Something went wrong.");
-              }
-            }}
+            onClick={handleDownloadClick}
           >
             <Download size={18} />
             <span>
               {isProcessing || !fileUrl ? "Processing..." : "Download"}
             </span>
           </a>
-          <Link to={"http://localhost:5000/tmp/x.png"} target="_blank" download>
-            Download
-          </Link>
         </div>
       </div>
     </div>

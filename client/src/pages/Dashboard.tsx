@@ -54,7 +54,7 @@ const Dashboard = () => {
       />
 
       {/* Main Content */}
-      <Main data={currentFolder} />
+      <Main data={currentFolder!} />
     </div>
   );
 };

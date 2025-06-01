@@ -13,10 +13,10 @@ export type FolderProps = {
 };
 
 export type FileProps = {
-  id: number;
-  name: string;
-  size: number;
-  type: string;
+  id?: number;
+  name?: string;
+  size?: number;
+  type?: string;
   createdAt?: string;
   updatedAt?: string;
 };

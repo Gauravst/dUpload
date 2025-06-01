@@ -25,7 +25,7 @@ import { FolderContext } from "@/context/folderContext";
 type Props = {
   data: FolderProps[];
   username?: string;
-  setFoldersData: (data: FolderProps[]) => void;
+  setFoldersData: React.Dispatch<React.SetStateAction<FolderProps[]>>;
 };
 
 export const Sidebar = ({ data, username, setFoldersData }: Props) => {
@@ -35,7 +35,7 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
   const [isCreateFolderOpen, setCreateFolderOpen] = useState(false);
   const currentData = data.find((item) => item.username === username);
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
-  const menuRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const menuRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [deleteFolder, setDeleteFolder] = useState<FolderProps | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -49,55 +49,65 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
 
   const { setOpenFolder } = context;
 
-  const handleUpload = async (files: File[]) => {
+  const handleUpload = async (files: File[]): Promise<void> => {
     setIsUploading(true);
     const res = await uploadFiles(files, currentData?.id);
-    console.log("rrrrr------", res);
     setUploadOpen(false);
     setIsUploading(false);
 
-    if (res === 200 || res === 201) {
+    if (res.status === 200 || res.status === 201) {
+      setOpenFolder((prev: FolderProps | null) => {
+        if (!prev) {
+          return null;
+        }
+
+        return {
+          ...prev,
+          files: [...(prev?.files || []), res.data],
+        };
+      });
       toast.success(`File uploaded`);
     } else {
       toast.error(`Something went wrong`);
     }
   };
 
-  const handleCreateFolder = async (name: string, username: string) => {
+  const handleCreateFolder = async (
+    name: string,
+    username: string,
+  ): Promise<void> => {
     const res = await createFolder(name, username);
     if (res.status) {
       setOpenFolder(res.data);
       setCreateFolderOpen(false);
       setFoldersData((prev) => [...prev, res.data]);
-      console.log("check", res.data);
       toast.success(`"${name}" created`);
       navigate(`/dashboard/${username}`);
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     await logout();
   };
 
-  const handleDelete = async (folder: FolderProps) => {
+  const handleDelete = (folder: FolderProps): void => {
     setDeleteFolder(folder);
     setDeleteOpen(true);
   };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (): Promise<void> => {
     if (deleteFolder?.id) {
-      const res = await DeleteFolder(deleteFolder?.id);
-      setFoldersData((prev) =>
-        prev.filter((folder) => folder.id !== deleteFolder?.id),
-      );
+      const res = await DeleteFolder(deleteFolder.id);
       if (res) {
+        setFoldersData((prev) =>
+          prev.filter((folder) => folder.id !== deleteFolder.id),
+        );
         setDeleteOpen(false);
         toast.success(`"${deleteFolder.name}" was deleted`);
       }
     }
   };
 
-  // Close popover when clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -118,6 +128,7 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
 
   return (
     <>
+      {/* Modals */}
       <ConfirmModal
         isOpen={isDeleteOpen}
         title="Delete Folder"
@@ -145,6 +156,7 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
         onClose={handleUploadLoadingClose}
       />
 
+      {/* Sidebar */}
       <aside className="flex flex-col justify-between items-center fixed left-0 top-0 h-screen w-72 bg-gray-800/50 backdrop-blur-lg border-r border-gray-700/50">
         <div className="p-4 w-full">
           <div className="flex items-center">
@@ -178,13 +190,11 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
                 <div
                   key={index}
                   className={`relative flex justify-between items-center ${isCurrent ? "bg-gray-700/50 text-blue-400 rounded-lg" : ""}`}
-                  ref={(el: HTMLDivElement | null) => {
-                    menuRefs.current[index] = el;
-                  }}
+                  ref={(el) => (menuRefs.current[index] = el)}
                 >
                   <button
                     onClick={() => navigate(`/dashboard/${folder.username}`)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 text-left`}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-left"
                   >
                     {isCurrent ? (
                       <FolderOpen size={20} className="text-blue-400" />
