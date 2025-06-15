@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [currentFolder, setCurrentFolder] = useState<FolderProps | null>(null);
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
+  console.log(currentFolder);
 
   const context = useContext(FolderContext);
   if (!context) {
