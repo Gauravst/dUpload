@@ -56,16 +56,15 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
     setIsUploading(false);
 
     if (res.status === 200 || res.status === 201) {
-      setOpenFolder((prev: FolderProps | null) => {
-        if (!prev) {
-          return null;
-        }
-
-        return {
-          ...prev,
-          files: [...(prev?.files || []), res.data],
+      // Get the current folder from context and update it directly
+      const { openFolder } = context;
+      if (openFolder) {
+        const updatedFolder: FolderProps = {
+          ...openFolder,
+          files: [...(openFolder.files || []), res.data],
         };
-      });
+        setOpenFolder(updatedFolder);
+      }
       toast.success(`File uploaded`);
     } else {
       toast.error(`Something went wrong`);
@@ -190,7 +189,9 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
                 <div
                   key={index}
                   className={`relative flex justify-between items-center ${isCurrent ? "bg-gray-700/50 text-blue-400 rounded-lg" : ""}`}
-                  ref={(el) => (menuRefs.current[index] = el)}
+                  ref={(el) => {
+                    menuRefs.current[index] = el;
+                  }}
                 >
                   <button
                     onClick={() => navigate(`/dashboard/${folder.username}`)}

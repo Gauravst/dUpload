@@ -100,12 +100,12 @@ export const Main = () => {
                       <div>
                         <h3 className="font-medium">{file.name}</h3>
                         <p className="text-sm text-gray-400">
-                          {file.size < 1024
+                          {file.size! < 1024
                             ? `${file.size} KB`
-                            : `${(file.size / 1024).toFixed(2)} MB`}{" "}
+                            : `${(file.size! / 1024).toFixed(2)} MB`}{" "}
                           •{" "}
-                          {file.type.split("/")[1].charAt(0).toUpperCase() +
-                            file.type.split("/")[1].slice(1)}{" "}
+                          {file.type!.split("/")[1].charAt(0).toUpperCase() +
+                            file.type!.split("/")[1].slice(1)}{" "}
                           • {"Private"}
                         </p>
                       </div>
@@ -113,7 +113,7 @@ export const Main = () => {
 
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleDownload(file.id, file.name)}
+                        onClick={() => handleDownload(file.id!, file.name!)}
                         className="p-2 hover:bg-gray-700 rounded-lg"
                       >
                         <Download size={18} />
@@ -122,7 +122,7 @@ export const Main = () => {
                         <Share2 size={18} />
                       </button> */}
                       <button
-                        onClick={() => hanldeDeleteButton(file.id, file.name)}
+                        onClick={() => hanldeDeleteButton(file.id!, file.name!)}
                         className="p-2 hover:bg-gray-700 rounded-lg"
                       >
                         <Trash2 size={18} />
