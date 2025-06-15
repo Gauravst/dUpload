@@ -3,6 +3,7 @@ import { useState } from "react";
 
 const CTASection = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  console.log(isLoginOpen);
   return (
     <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-lg py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
