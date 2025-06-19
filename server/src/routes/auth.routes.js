@@ -4,6 +4,7 @@ import {
   authCallback,
   getUser,
   logoutUser,
+  continueWithoutAuth,
 } from '../controllers/auth.controllers.js';
 import { verifyAccessToken } from '../middlewares/auth.middeware.js';
 
@@ -28,6 +29,9 @@ router
 router
   .route('/github/callback')
   .get(passport.authenticate('github', { session: false }), authCallback);
+
+// continue without auth
+router.route('/continue-without-auth').get(continueWithoutAuth);
 
 // Get User & Logout
 router.route('/user').get(verifyAccessToken, getUser);

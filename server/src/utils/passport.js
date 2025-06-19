@@ -39,7 +39,7 @@ const createMainFolder = async (pool, userId) => {
   await pool.query(query, values);
 };
 
-const findOrCreateUser = async ({
+export const findOrCreateUser = async ({
   name,
   email,
   profilePic,

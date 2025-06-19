@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaUserClock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
 interface LoginModalProps {
@@ -18,6 +18,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleGoogleClick = () => {
     window.open(`${baseUrl}/auth/google`, "_self");
   };
+
+  const handleTempUserClick = async () => {};
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -46,9 +48,24 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             <span>Continue with Google</span>
           </button>
 
+          <button
+            onClick={handleTempUserClick}
+            className="w-full flex items-center justify-center gap-3 bg-gray-800/50 hover:bg-gray-800 text-white py-3 px-4 rounded-lg border border-gray-700/50 transition duration-200"
+          >
+            <FaUserClock size={20} />
+            <span>Continue without Auth</span>
+          </button>
+
           <p className="text-sm text-gray-400 text-center mt-6">
             By continuing, you agree to our Terms of Service and Privacy Policy
           </p>
+
+          {import.meta.env.VITE_OAUTH === "true" && (
+            <p className="text-sm text-red-400 text-center mt-2 w-full">
+              Google and GitHub login might not work at the moment. Please use
+              the "Continue without Auth" option instead.
+            </p>
+          )}
         </div>
       </div>
     </div>
