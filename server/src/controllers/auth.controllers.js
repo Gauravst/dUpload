@@ -32,7 +32,7 @@ export const continueWithoutAuth = asyncHandler(async (_, res) => {
   return res
     .status(200)
     .cookie('accessToken', tokens.accessToken, cookieOptions)
-    .json(new ApiResponse(200, { data: user }, 'user data'));
+    .json(new ApiResponse(200, { user }, 'user data'));
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {

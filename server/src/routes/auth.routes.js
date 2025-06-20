@@ -31,7 +31,7 @@ router
   .get(passport.authenticate('github', { session: false }), authCallback);
 
 // continue without auth
-router.route('/continue-without-auth').get(continueWithoutAuth);
+router.route('/continue-without-auth').post(continueWithoutAuth);
 
 // Get User & Logout
 router.route('/user').get(verifyAccessToken, getUser);

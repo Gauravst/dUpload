@@ -1,6 +1,8 @@
+import { ContinueWithoutAuth } from "@/services/authService";
 import { X } from "lucide-react";
 import { FaGithub, FaUserClock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { useAuth } from "@/context/authContext";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -8,6 +10,7 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const { setLoginUser } = useAuth();
   const baseUrl = import.meta.env.VITE_BASE_URL;
   if (!isOpen) return null;
 
@@ -19,7 +22,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     window.open(`${baseUrl}/auth/google`, "_self");
   };
 
-  const handleTempUserClick = async () => {};
+  const handleTempUserClick = async () => {
+    const res = await ContinueWithoutAuth();
+    if (res.status) {
+      setLoginUser(res.data);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">

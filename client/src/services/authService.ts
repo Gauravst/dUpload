@@ -21,10 +21,14 @@ export const logoutUser = async (): Promise<boolean> => {
   }
 };
 
-export const ContinueWithoutAuth = async (): Promise<boolean> => {
+export const ContinueWithoutAuth = async (): Promise<{
+  status: boolean;
+  data: User;
+}> => {
   try {
     const response = await api.post("/auth/continue-without-auth");
-    return response.status == 200;
+    console.log(response);
+    return { status: response.status == 200, data: response.data.data.user };
   } catch (error) {
     console.error("Error :", error);
     throw error;

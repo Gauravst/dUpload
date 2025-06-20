@@ -11,6 +11,7 @@ import {
 interface AuthContextType {
   user: User | null;
   logout: () => Promise<void>;
+  setLoginUser: (data: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,6 +35,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
 
+  const setLoginUser = async (data: User) => {
+    try {
+      const currentUser: User = data;
+      setUser(currentUser);
+    } catch (error) {
+      console.error("Failed", error);
+    }
+  };
+
   const logout = async () => {
     try {
       await logoutUser();
@@ -44,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, logout }}>
+    <AuthContext.Provider value={{ user, logout, setLoginUser }}>
       {children}
     </AuthContext.Provider>
   );
