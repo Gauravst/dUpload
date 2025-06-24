@@ -37,6 +37,7 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
   const menuRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
+  const [isLogoutOpen, setLogoutOpen] = useState(false);
   const [deleteFolder, setDeleteFolder] = useState<FolderProps | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -86,6 +87,10 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
   };
 
   const handleLogout = async (): Promise<void> => {
+    setLogoutOpen(true);
+  };
+
+  const handleLogoutConfirm = async () => {
     await logout();
   };
 
@@ -96,6 +101,11 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (deleteFolder?.id) {
+      if (deleteFolder.username == "main") {
+        toast.error(`You can not delete 'main' folder`);
+        setDeleteOpen(false);
+        return;
+      }
       const res = await DeleteFolder(deleteFolder.id);
       if (res) {
         setFoldersData((prev) =>
@@ -135,6 +145,15 @@ export const Sidebar = ({ data, username, setFoldersData }: Props) => {
         buttonText="Delete"
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleDeleteConfirm}
+      />
+
+      <ConfirmModal
+        isOpen={isLogoutOpen}
+        title="Logout User"
+        description={`Are you sure you want to logout ?`}
+        buttonText="Logout"
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleLogoutConfirm}
       />
 
       <UploadModal
