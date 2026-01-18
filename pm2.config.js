@@ -4,7 +4,7 @@ module.exports = {
       name: "dupload_backend",
       script: "npm",
       args: "run start",
-      cwd: "/var/www/dupload/server",
+      cwd: "/var/www/dUpload/server",
       autorestart: true,
       watch: false,
     },
